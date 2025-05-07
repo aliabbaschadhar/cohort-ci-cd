@@ -1,102 +1,125 @@
-import Image from "next/image";
+"use client";
+import { useState, useEffect } from "react";
+import dynamic from 'next/dynamic';
+import Image from 'next/image';
+
+// Dynamically import the confetti component with SSR disabled
+const ReactConfetti = dynamic(() => import('react-confetti'), {
+  ssr: false,
+});
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [confetti, setConfetti] = useState(false);
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  useEffect(() => {
+    // Set initial window size
+    setWindowSize({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+
+    // Update window dimensions on resize
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Trigger confetti animation on component mount
+    setConfetti(true);
+
+    // Turn off confetti after 5 seconds to avoid performance issues
+    const timer = setTimeout(() => {
+      setConfetti(false);
+    }, 5000);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  // Function to replay the confetti animation
+  const replayConfetti = () => {
+    setConfetti(true);
+    setTimeout(() => setConfetti(false), 5000);
+  };
+
+  return (
+    <div className="birthday-container min-h-screen p-8 pb-20 gap-16 sm:p-20">
+      {confetti && (
+        <ReactConfetti
+          width={windowSize.width}
+          height={windowSize.height}
+          numberOfPieces={200}
+          recycle={false}
+          colors={['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4CAF50', '#8BC34A', '#FFEB3B', '#FFC107', '#FF9800', '#FF5722']}
+        />
+      )}
+
+      <main className="birthday-content flex flex-col gap-[32px] items-center text-center">
+        <h1 className="birthday-title text-4xl sm:text-6xl font-bold animate-bounce mb-4">
+          Happy Birthday Waqar! <span className="kiss-emoji">💋</span>
+        </h1>
+
+        {/* Portrait of a beautiful girl */}
+        <div className="portrait-container">
+          <Image
+            src="https://picsum.photos/seed/portrait/200"
+            alt="Elegant Portrait"
+            width={200}
+            height={200}
+            className="portrait"
+          />
+        </div>
+
+        <div className="birthday-cake-container relative w-[200px] h-[200px] mx-auto my-10">
+          <div className="birthday-cake">
+            <div className="candles">
+              <div className="flame"></div>
+              <div className="flame"></div>
+              <div className="flame"></div>
+            </div>
+          </div>
+        </div>
+
+        <p className="birthday-message text-xl sm:text-2xl mb-8 max-w-3xl mx-auto">
+          Today is a special day for someone amazing. Wishing you joy, success, and all the happiness in the world!
+        </p>
+
+        <div className="birthday-wishes p-6 bg-white/10 backdrop-blur-md rounded-lg shadow-glow max-w-2xl mx-auto">
+          <h2 className="text-2xl font-bold mb-4">🎉 Birthday Wishes 🎉</h2>
+          <ul className="wishes-list space-y-4 text-left">
+            <li className="wish-item">May your code always compile on the first try</li>
+            <li className="wish-item">May your bugs be simple and your solutions brilliant</li>
+            <li className="wish-item">May your day be as wonderful as a successful deployment</li>
+            <li className="wish-item">May your year ahead be filled with innovation and success</li>
+          </ul>
+        </div>
+
+        <div className="flex gap-6 items-center flex-col sm:flex-row mt-8">
+          <button
+            className="celebration-button rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-gradient-to-r from-purple-500 to-pink-500 text-white gap-2 font-medium text-sm sm:text-base h-12 sm:h-14 px-6 sm:px-8 hover:opacity-90"
+            onClick={replayConfetti}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
+            Celebrate Again!
+          </button>
+
           <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            className="message-button rounded-full border border-solid border-white/20 transition-colors flex items-center justify-center hover:bg-white/10 font-medium text-sm sm:text-base h-12 sm:h-14 px-6 sm:px-8"
+            href="#"
           >
-            Read our docs
+            Send Wishes
           </a>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      <footer className="birthday-footer mt-16 text-center">
+        <p className="text-sm opacity-70">Made with ❤️ for Waqar&apos;s special day - {new Date().toLocaleDateString()}</p>
       </footer>
     </div>
   );

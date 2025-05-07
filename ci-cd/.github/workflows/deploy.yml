@@ -1,0 +1,15 @@
+name: Deploy to EC2
+# This workflow deploys the application to an EC2 instance whenever code is pushed to the main branch.
+# It uses SSH to connect to the EC2 instance and rsync to transfer files.
+
+on: 
+    push:
+        branches:
+            - main
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout the code
+              uses: actions/checkout@v2
